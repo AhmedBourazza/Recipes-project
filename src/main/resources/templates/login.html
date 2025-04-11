@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+        }
+
+        /* Barre de menu */
+        .navbar {
+            background-color: #4CAF50;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+        /* Conteneur du formulaire */
+        .login-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            margin: 60px auto;
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .input-group button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .input-group button:hover {
+            background-color: #45a049;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Barre de navigation -->
+<div class="navbar">
+    <div><a href="/">Accueil</a></div>
+    <div>
+        <a href="/login">Connexion</a>
+        <a href="/register">Inscription</a>
+    </div>
+</div>
+
+<!-- Formulaire de connexion -->
+<div class="login-container">
+    <h2>Connexion</h2>
+
+    <form action="/login" method="post">
+        <div class="input-group">
+            <input type="email" name="email" placeholder="Votre email" required>
+        </div>
+        <div class="input-group">
+            <input type="password" name="password" placeholder="Votre mot de passe" required>
+        </div>
+        <div class="input-group">
+            <button type="submit">Se connecter</button>
+        </div>
+    </form>
+
+    <div class="error-message" th:if="${error}">
+        Identifiants incorrects. Veuillez réessayer.
+    </div>
+</div>
+
+</body>
+</html>
