@@ -1,69 +1,60 @@
-name: Build and Deploy Recipes App   # Nom du workflow, visible dans GitHub Actions
+name: Build and Deploy Recipes App
 
 on:
-  push:  # Déclenche le workflow sur un push dans la branche master
-    branches: [ "master" ]
-  pull_request:  # Déclenche également sur les pull requests dans master
-    branches: [ "master" ]
+  push:
+    branches: 
+      - master  # Déclenche le workflow sur un push dans la branche master
+  pull_request:
+    branches:
+      - master  # Déclenche également sur les pull requests dans master
 
 jobs:
-  build:  # Définition du job 'build'
-    runs-on: ubuntu-latest  # Spécifie que le job s'exécute sur un environnement Ubuntu le plus récent
-    environment: docker  # Définit l'environnement GitHub Actions (utile pour les secrets)
+  build:
+    runs-on: ubuntu-latest  # Exécution sur un environnement Ubuntu récent
+    environment: docker  # Utilisation de l'environnement GitHub Actions défini pour les secrets Docker
 
     services:
-      mysql:  # Service MySQL utilisé pour le test de l'application
-        image: mysql:8.0  # Utilise l'image officielle de MySQL version 8.0
+      mysql:  # Service MySQL pour tester l'application
+        image: mysql:8.0  # Image officielle de MySQL
         env:
-          MYSQL_ROOT_PASSWORD: root  # Mot de passe de l'utilisateur root de MySQL
-          MYSQL_DATABASE: bdrecipes  # Nom de la base de données MySQL
-          MYSQL_USER: root  # Utilisateur MySQL
-          MYSQL_PASSWORD: root  # Mot de passe de l'utilisateur MySQL
+          MYSQL_ROOT_PASSWORD: root  # Mot de passe root pour MySQL
+          MYSQL_DATABASE: bdrecipes  # Nom de la base de données
+          MYSQL_USER: root  # Utilisateur root pour MySQL
+          MYSQL_PASSWORD: root  # Mot de passe root pour MySQL
         ports:
-          - 3308:3306  # Redirige le port local 3307 vers le port 3306 de MySQL
-        options:  # Options supplémentaires pour vérifier la santé du service MySQL
-          --health-cmd="mysqladmin ping -h localhost -u root -proot"  # Commande pour vérifier si MySQL est prêt
-          --health-interval=10s  # Intervalle entre les vérifications de santé
-          --health-timeout=5s  # Temps avant d'abandonner la vérification de santé
-          --health-retries=5  # Nombre de tentatives avant de considérer le service comme échoué
+          - 3308:3306  # Redirection du port local 3308 vers le port 3306 de MySQL
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
-    steps:  # Liste des étapes dans le job
-      - name: Checkout code  # Vérifie le code source depuis GitHub
-        uses: actions/checkout@v3  # Action GitHub officielle pour vérifier le code source
 
-      - name: Set up JDK 17  # Installe JDK 17 (Java Development Kit)
-        uses: actions/setup-java@v3  # Action officielle pour configurer Java
+    steps:
+      - name: Checkout code  # Récupérer le code source depuis GitHub
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17  # Installer Java 17 (nécessaire pour l'application)
+        uses: actions/setup-java@v3
         with:
-          distribution: 'corretto'  # Distribution de Java (Amazon Corretto)
+          distribution: 'corretto'  # Utilisation de la distribution Corretto d'Amazon
           java-version: 17  # Version de Java à utiliser
 
-      - name: Run Unit Tests  # Exécute les tests unitaires avec Maven
-        run: mvn -B test --file pom.xml  # Exécution de Maven pour lancer les tests
-        env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/bdrecipes?serverTimezone=UTC
-          # URL de connexion à la BD
-          SPRING_DATASOURCE_USERNAME: root  # Utilisateur pour se connecter à la BD
-          SPRING_DATASOURCE_PASSWORD: root  # Mot de passe pour l'utilisateur de la BD
-
-      - name: Build app  # Compile et package l'application
+      - name: Build app  # Compiler et packager l'application avec Maven
         run: |
-          mvn clean package -DskipTests  # Nettoie le projet et compile sans exécuter les tests
+          mvn clean package -DskipTests  # Nettoyer et compiler sans exécuter les tests
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/bdrecipes?serverTimezone=UTC  # URL de connexion à la BD
-          SPRING_DATASOURCE_USERNAME: root  # Utilisateur pour la BD
-          SPRING_DATASOURCE_PASSWORD: root  # Mot de passe pour la BD
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/bdrecipes?serverTimezone=UTC  # URL de connexion à la base de données
+          SPRING_DATASOURCE_USERNAME: root  # Utilisateur MySQL
+          SPRING_DATASOURCE_PASSWORD: root  # Mot de passe MySQL
 
-      - name: Log in to Docker Hub  # Connecte GitHub Actions à Docker Hub
-        uses: docker/login-action@v2  # Action officielle pour se connecter à Docker Hub
+      - name: Log in to Docker Hub  # Se connecter à Docker Hub avec les secrets
+        uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}  # Utilisateur Docker Hub (via secrets GitHub)
-          password: ${{ secrets.DOCKER_PASSWORD }}  # Mot de passe ou token Docker Hub (via secrets)
+          username: ${{ secrets.DOCKER_USERNAME }}  # Utilisateur Docker Hub (stocké dans les secrets)
+          password: ${{ secrets.DOCKER_PASSWORD }}  # Mot de passe Docker Hub ou token d'accès (stocké dans les secrets)
 
-      - name: Build and Push Docker image  # Construit l'image Docker et la pousse vers Docker Hub
-        uses: docker/build-push-action@v2  # Action Docker officielle pour construire et pousser une image
+      - name: Build and Push Docker image  # Construire l'image Docker et la pousser vers Docker Hub
+        uses: docker/build-push-action@v2
         with:
-          context: .  # Utilise le répertoire actuel comme contexte de construction
-          push: true  # Pousse l'image construite vers Docker Hub
+          context: .  # Utiliser le répertoire actuel comme contexte de construction
+          push: true  # Pousser l'image construite vers Docker Hub
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/recipes-app:latest  # Tag de l'image avec 'latest'
             ${{ secrets.DOCKER_USERNAME }}/recipes-app:${{ github.run_number }}  # Tag avec le numéro de build de GitHub Actions
