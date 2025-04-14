@@ -2,12 +2,15 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Inscription</title>
+    <title>Inscription - Recettes Project</title>
+    <!-- Intégration de Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <style>
-        /* Réutilise les mêmes styles que login.html */
         body {
             font-family: Arial, sans-serif;
             background-color: #f2f2f2;
+            margin: 0;
         }
 
         .navbar {
@@ -25,6 +28,10 @@
             font-weight: bold;
         }
 
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
         .register-container {
             background-color: #fff;
             padding: 30px;
@@ -36,14 +43,21 @@
 
         .register-container h2 {
             text-align: center;
+            margin-bottom: 20px;
         }
 
         .input-group {
             margin-bottom: 15px;
+            display: flex;
+            align-items: center;
         }
 
-        .input-group input,
-        .input-group button {
+        .input-group i {
+            margin-right: 10px;
+            color: #4CAF50;
+        }
+
+        .input-group input {
             width: 100%;
             padding: 10px;
             border-radius: 5px;
@@ -51,10 +65,17 @@
         }
 
         .input-group button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
             background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
+        }
+
+        .input-group button:hover {
+            background-color: #45a049;
         }
 
         .error-message {
@@ -65,6 +86,7 @@
 </head>
 <body>
 
+<!-- Barre de navigation -->
 <div class="navbar">
     <div><a href="/">Accueil</a></div>
     <div>
@@ -73,20 +95,24 @@
     </div>
 </div>
 
+<!-- Formulaire d'inscription -->
 <div class="register-container">
-    <h2>Inscription</h2>
+    <h2><i class="fas fa-user-plus"></i> Inscription</h2>
     <form action="/register" method="post">
         <div class="input-group">
+            <i class="fas fa-envelope"></i>
             <input type="email" name="email" placeholder="Votre email" required>
         </div>
         <div class="input-group">
+            <i class="fas fa-lock"></i>
             <input type="password" name="password" placeholder="Mot de passe" required>
         </div>
         <div class="input-group">
+            <i class="fas fa-lock"></i>
             <input type="password" name="confirmPassword" placeholder="Confirmez le mot de passe" required>
         </div>
         <div class="input-group">
-            <button type="submit">S'inscrire</button>
+            <button type="submit"><i class="fas fa-user-check"></i> S'inscrire</button>
         </div>
     </form>
     <div class="error-message" th:if="${error}">
