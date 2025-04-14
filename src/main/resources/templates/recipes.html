@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
+
+        body {
+            background: linear-gradient(to right, #8e9eab, #eef2f3);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            font-family: system-ui, -apple-system, system-ui, ".SFNSText-Regular", sans-serif;
+            letter-spacing: .03em;
+        }
+
+        /* Navigation Menu */
+        nav {
+            background-color: #333;
+            width: 100%;
+            padding: 10px 0;
+            position: fixed;
+            top: 0;
+            z-index: 10;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        nav ul li {
+            margin: 0 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+
+        nav ul li a:hover {
+            color: #f39c12;
+        }
+
+        /* Title Style */
+        .title-container {
+            text-align: center;
+            margin-top: 80px; /* To create space between the navbar and the title */
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Recipe Styles */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px; /* Space between title and recipes */
+        }
+
+        .item-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .item {
+            width: 400px;
+            height: 500px;
+            background: #fff;
+            position: relative;
+            box-shadow: -15px 7px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            border-radius: 10px;
+            margin: 20px;
+        }
+
+        .item .img {
+            width: 100%;
+            height: 50%;
+            background: black;
+            border-radius: 10px 10px 0 0;
+            position: absolute;
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        .item .img-content {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: top center;
+            background-repeat: no-repeat;
+        }
+
+        .item .text-container {
+            width: 100%;
+            height: 55%;
+            background: #fff;
+            border-radius: 10px;
+            position: absolute;
+            bottom: 0;
+            z-index: 10;
+            box-shadow: -3px -10px 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            padding: 30px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item h2 {
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        .item .social {
+            width: 100%;
+            height: 50px;
+            position: absolute;
+            z-index: 15;
+            top: 40%;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .item .social div {
+            width: 50px;
+            height: 50px;
+            background: green;
+            margin: 0 5px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+
+        .item .social div:hover {
+            transform: scale(1.1);
+        }
+
+        .item .social a:last-child {
+            margin-right: 20px;
+        }
+
+        .item a .tw {
+            background-color: #0084b4;
+        }
+
+        .item a .fb {
+            background-color: #3b5998;
+        }
+
+        .item a .ig {
+            background-color: #cd486b;
+        }
+
+        .item .like {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #a37f7f;
+            border-radius: 50%;
+            color: #fff;
+            right: 30px;
+            top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .item .like:hover {
+            transform: scale(1.1);
+        }
+
+        .item .like i {
+            font-size: 15px;
+        }
+
+        .item .like.clicked {
+            background: #ffcece;
+        }
+
+        .item .like.clicked i {
+            color: #e60026;
+        }
+
+        .item .readmore {
+            display: flex;
+            padding-bottom: 5px;
+        }
+
+        .item .readmore h3 {
+            display: block;
+            padding: 10px 15px;
+            border-radius: 40px;
+            border: 1px solid;
+            cursor: pointer;
+            font-size: 10px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Menu -->
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/recipes">Recipes</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+    </ul>
+</nav>
+
+<!-- Title -->
+<div class="title-container">
+    <h1>Delicious Recipes</h1>
+</div>
+
+<!-- Recipe List -->
+<div class="container">
+    <div class="item-list">
+        <div th:each="recipe : ${recipes.meals}" class="item">
+            <div class="img">
+                <a href="javascript:;">
+                    <div class="like"><i class="fa fa-heart" aria-hidden="true"></i></div>
+                </a>
+                <div class="img-content" th:style="'background-image: url(' + ${recipe.strMealThumb} + ');'"></div>
+            </div>
+            <div class="social">
+                <a href="javascript:;">
+                    <div class="fb"><i class="fa fa-facebook" aria-hidden="true"></i></div>
+                </a>
+                <a href="javascript:;">
+                    <div class="ig"><i class="fa fa-instagram" aria-hidden="true"></i></div>
+                </a>
+                <a href="javascript:;">
+                    <div class="tw"><i class="fa fa-twitter" aria-hidden="true"></i></div>
+                </a>
+            </div>
+            <div class="text-container">
+                <h2 class="title" th:text="${recipe.strMeal}"></h2>
+                <div class="content">
+                    <p>Recipe description or additional info can go here...</p>
+                </div>
+                <div class="readmore">
+                    <h3>show more</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript/jQuery for "Show more" functionality
+    $(function(){
+        var getTxt = $('.content p').text();
+        var realTxt = [getTxt];
+        var textCol = [getTxt];
+        var wordsCount = textCol[0].split(' ').length;
+        var words = textCol[0].split(' ');
+        var wordsLimit = 40;
+        var limitCol;
+
+        $('.readmore h3').click(function(){
+            if ($(this).text() === "show more") {
+                $('.content p').text(realTxt.join(' '));
+                $('.content').addClass('scroll');
+                $(this).text('show less');
+                $('.item').addClass('showfull');
+            } else {
+                $('.content p').text(limitCol);
+                $(this).text('show more');
+                $('.item').removeClass('showfull');
+            }
+        });
+
+        if (wordsLimit <= wordsCount) {
+            words.splice(wordsLimit, wordsCount - wordsLimit);
+            words = words.join(' ');
+            $('.content p').text(words + '...');
+            limitCol = $('.content p').text();
+        }
+
+        $('.like').click(function(){
+            $(this).toggleClass('clicked');
+        });
+    });
+</script>
+</body>
+</html>
