@@ -51,6 +51,4 @@ jobs:
         with:
           context: .  # Utiliser le répertoire actuel comme contexte de construction
           push: true  # Pousser l'image construite vers Docker Hub
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/recipes-app:latest  # Tag de l'image avec 'latest'
-            ${{ secrets.DOCKER_USERNAME }}/recipes-app:${{ github.run_number }}  # Tag avec le numéro de build de GitHub Actions
+          tags: ${{ secrets.DOCKER_USERNAME }}/recipes-app:${{ github.run_number }}  # Tag de l'image avec le numéro de build de GitHub Actions
