@@ -40,7 +40,7 @@ jobs:
         run: |
           mvn clean package -DskipTests  # Nettoyer et compiler sans exécuter les tests
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/bdrecipes?serverTimezone=UTC  # URL de connexion à la base de données
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3308/bdrecipes?serverTimezone=UTC  # URL de connexion à la base de données
           SPRING_DATASOURCE_USERNAME: root  # Utilisateur MySQL
           SPRING_DATASOURCE_PASSWORD: root  # Mot de passe MySQL
 
