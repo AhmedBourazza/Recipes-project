@@ -19,13 +19,10 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root  # Mot de passe root pour MySQL
           MYSQL_DATABASE: bdrecipes  # Nom de la base de données
-          MYSQL_USER: root  # Utilisateur root pour MySQL
-          MYSQL_PASSWORD: root  # Mot de passe root pour MySQL
         ports:
           - 3308:3306  # Redirection du port local 3308 vers le port 3306 de MySQL
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
-
+        
     steps:
       - name: Checkout code  # Récupérer le code source depuis GitHub
         uses: actions/checkout@v3
