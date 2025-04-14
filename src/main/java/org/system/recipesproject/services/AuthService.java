@@ -21,4 +21,17 @@ public class AuthService {
         }
         return false;
     }
+    public boolean register(String email, String password) {
+        Optional<User> existingUser = userRepository.findByEmail(email);
+        if (existingUser.isPresent()) {
+            return false; // utilisateur existe déjà
+        }
+
+        User newUser = new User();
+        newUser.setEmail(email);
+        newUser.setPassword(password); // idéalement, hash le mot de passe ici
+        userRepository.save(newUser);
+        return true;
+    }
+
 }

@@ -49,5 +49,30 @@ public class AuthController {
 
         return "ingredientForm";
     }
+    @GetMapping("/register")
+    public String showRegisterForm() {
+        return "register"; // correspond à register.html dans templates
+    }
+
+    @PostMapping("/register")
+    public String handleRegister(
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestParam String confirmPassword,
+            Model model) {
+
+        if (!password.equals(confirmPassword)) {
+            model.addAttribute("error", "Les mots de passe ne correspondent pas.");
+            return "register";
+        }
+
+        boolean registered = authService.register(email, password);
+        if (!registered) {
+            model.addAttribute("error", "Un compte avec cet email existe déjà.");
+            return "register";
+        }
+
+        return "redirect:/login";
+    }
 
 }

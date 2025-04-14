@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Inscription</title>
+    <style>
+        /* Réutilise les mêmes styles que login.html */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+
+        .navbar {
+            background-color: #4CAF50;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        .register-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+            margin: 60px auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .register-container h2 {
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group input,
+        .input-group button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .input-group button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div><a href="/">Accueil</a></div>
+    <div>
+        <a href="/login">Connexion</a>
+        <a href="/register">Inscription</a>
+    </div>
+</div>
+
+<div class="register-container">
+    <h2>Inscription</h2>
+    <form action="/register" method="post">
+        <div class="input-group">
+            <input type="email" name="email" placeholder="Votre email" required>
+        </div>
+        <div class="input-group">
+            <input type="password" name="password" placeholder="Mot de passe" required>
+        </div>
+        <div class="input-group">
+            <input type="password" name="confirmPassword" placeholder="Confirmez le mot de passe" required>
+        </div>
+        <div class="input-group">
+            <button type="submit">S'inscrire</button>
+        </div>
+    </form>
+    <div class="error-message" th:if="${error}">
+        <span th:text="${error}"></span>
+    </div>
+</div>
+
+</body>
+</html>
