@@ -47,7 +47,7 @@ public class AuthController {
             return "redirect:/login"; // Redirige si l'utilisateur n'est pas connecté
         }
 
-        return "home";
+        return "ingredientForm";
     }
 
 }

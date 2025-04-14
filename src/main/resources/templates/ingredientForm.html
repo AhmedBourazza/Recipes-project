@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Recipe Search</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: 0.3s;
+        }
+
+        body {
+            background: #f0f4f8;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            color: #333;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #ff7043;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        form {
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: #ff7043;
+            background-color: #fff;
+        }
+
+        button {
+            background-color: #ff7043;
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e64a19;
+        }
+
+        button:active {
+            background-color: #bf360c;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 28px;
+            }
+
+            form {
+                padding: 30px;
+            }
+
+            input[type="text"] {
+                padding: 12px;
+            }
+
+            button {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h1>Search Recipes by Ingredient</h1>
+    <form action="/recipes" method="post">
+        <label for="ingredient">Ingredient: </label>
+        <input type="text" id="ingredient" name="ingredient" required placeholder="Enter an ingredient"/>
+        <button type="submit">Search Recipes</button>
+    </form>
+</div>
+</body>
+</html>
