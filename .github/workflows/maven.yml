@@ -1,31 +1,69 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Java CI with Maven
+name: Build and Deploy Recipes App   # Nom du workflow, visible dans GitHub Actions
 
 on:
-  push:
+  push:  # Déclenche le workflow sur un push dans la branche master
     branches: [ "master" ]
-  pull_request:
+  pull_request:  # Déclenche également sur les pull requests dans master
     branches: [ "master" ]
 
 jobs:
-  build:
+  build:  # Définition du job 'build'
+    runs-on: ubuntu-latest  # Spécifie que le job s'exécute sur un environnement Ubuntu le plus récent
+    environment: docker  # Définit l'environnement GitHub Actions (utile pour les secrets)
 
-    runs-on: ubuntu-latest
+    services:
+      mysql:  # Service MySQL utilisé pour le test de l'application
+        image: mysql:8.0  # Utilise l'image officielle de MySQL version 8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root  # Mot de passe de l'utilisateur root de MySQL
+          MYSQL_DATABASE: bdrecipes  # Nom de la base de données MySQL
+          MYSQL_USER: root  # Utilisateur MySQL
+          MYSQL_PASSWORD: root  # Mot de passe de l'utilisateur MySQL
+        ports:
+          - 3308:3306  # Redirige le port local 3307 vers le port 3306 de MySQL
+        options:  # Options supplémentaires pour vérifier la santé du service MySQL
+          --health-cmd="mysqladmin ping -h localhost -u root -proot"  # Commande pour vérifier si MySQL est prêt
+          --health-interval=10s  # Intervalle entre les vérifications de santé
+          --health-timeout=5s  # Temps avant d'abandonner la vérification de santé
+          --health-retries=5  # Nombre de tentatives avant de considérer le service comme échoué
 
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+    steps:  # Liste des étapes dans le job
+      - name: Checkout code  # Vérifie le code source depuis GitHub
+        uses: actions/checkout@v3  # Action GitHub officielle pour vérifier le code source
+
+      - name: Set up JDK 17  # Installe JDK 17 (Java Development Kit)
+        uses: actions/setup-java@v3  # Action officielle pour configurer Java
+        with:
+          distribution: 'corretto'  # Distribution de Java (Amazon Corretto)
+          java-version: 17  # Version de Java à utiliser
+
+      - name: Run Unit Tests  # Exécute les tests unitaires avec Maven
+        run: mvn -B test --file pom.xml  # Exécution de Maven pour lancer les tests
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/bdrecipes?serverTimezone=UTC
+          # URL de connexion à la BD
+          SPRING_DATASOURCE_USERNAME: root  # Utilisateur pour se connecter à la BD
+          SPRING_DATASOURCE_PASSWORD: root  # Mot de passe pour l'utilisateur de la BD
+
+      - name: Build app  # Compile et package l'application
+        run: |
+          mvn clean package -DskipTests  # Nettoie le projet et compile sans exécuter les tests
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/bdrecipes?serverTimezone=UTC  # URL de connexion à la BD
+          SPRING_DATASOURCE_USERNAME: root  # Utilisateur pour la BD
+          SPRING_DATASOURCE_PASSWORD: root  # Mot de passe pour la BD
+
+      - name: Log in to Docker Hub  # Connecte GitHub Actions à Docker Hub
+        uses: docker/login-action@v2  # Action officielle pour se connecter à Docker Hub
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}  # Utilisateur Docker Hub (via secrets GitHub)
+          password: ${{ secrets.DOCKER_PASSWORD }}  # Mot de passe ou token Docker Hub (via secrets)
+
+      - name: Build and Push Docker image  # Construit l'image Docker et la pousse vers Docker Hub
+        uses: docker/build-push-action@v2  # Action Docker officielle pour construire et pousser une image
+        with:
+          context: .  # Utilise le répertoire actuel comme contexte de construction
+          push: true  # Pousse l'image construite vers Docker Hub
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/recipes-app:latest  # Tag de l'image avec 'latest'
+            ${{ secrets.DOCKER_USERNAME }}/recipes-app:${{ github.run_number }}  # Tag avec le numéro de build de GitHub Actions
