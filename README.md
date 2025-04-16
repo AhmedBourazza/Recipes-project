@@ -24,7 +24,7 @@ Elle utilise l’API [TheMealDB](https://www.themealdb.com/) pour afficher dynam
 1. Cloner le projet :
 
    ```bash
-   git clone https://github.com/ton-utilisateur/recipes-app.git
+   git clone https://github.com/AhmedBourazza/Recipes-project
    cd recipes-app
   
 2. Créer la base de données MySQL :
